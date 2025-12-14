@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repaso Profesional</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #4F46E5; /* Indigo moderno */
+            --secondary: #10B981; /* Verde esmeralda */
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-bg: #ffffff;
+            --text-main: #1F2937;
+            --text-light: #6B7280;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--bg-gradient);
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            padding: 20px;
+            box-sizing: border-box;
+            color: var(--text-main);
+        }
+        
+        .card-container { 
+            background: var(--card-bg); 
+            width: 100%; 
+            max-width: 600px; 
+            padding: 40px; 
+            border-radius: 24px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2); 
+            text-align: center; 
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        /* Barra de progreso superior */
+        .progress-container {
+            width: 100%;
+            background-color: #E5E7EB;
+            height: 6px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+        
+        h2 { 
+            margin: 0; 
+            font-size: 1.5rem; 
+            color: var(--text-main);
+            margin-bottom: 5px;
+        }
+
+        /* --- CONTENEDOR DE IMAGEN (PREGUNTA) --- */
+        .question-image-container {
+            width: 100%;
+            height: 320px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #F3F4F6;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #E5E7EB;
+        }
+
+        .question-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s;
+        }
+        
+        /* Efecto zoom suave al pasar el mouse por la imagen */
+        .question-image-container:hover .question-image {
+            transform: scale(1.02);
+        }
+        /* ----------------------------------------- */
+
+        /* --- TEXTO DE RESPUESTA --- */
+        .answer-box { 
+            background-color: #ECFDF5; /* Fondo verde muy suave */
+            color: #065F46; /* Texto verde oscuro */
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px; 
+            font-size: 1.25rem;
+            font-weight: 700;
+            border: 1px solid #A7F3D0;
+            display: none; 
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- BOTONES --- */
+        .btn-container { 
+            display: grid; 
+            gap: 15px; 
+            width: 100%; 
+        }
+
+        button { 
+            padding: 16px; 
+            border: none; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-size: 1rem; 
+            font-weight: 700; 
+            transition: all 0.2s; 
+            font-family: 'Inter', sans-serif;
+            width: 100%;
+        }
+        
+        .btn-reveal { 
+            background-color: var(--primary); 
+            color: white; 
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+        }
+        .btn-reveal:hover { 
+            background-color: #4338ca; 
+            transform: translateY(-2px);
+        }
+        
+        .btn-next { 
+            background-color: var(--text-main); 
+            color: white; 
+            display: none; 
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+        }
+        .btn-next:hover { 
+            background-color: #000; 
+            transform: translateY(-2px);
+        }
+        
+        .btn-restart { 
+            background-color: transparent; 
+            color: var(--text-light); 
+            border: 2px solid #E5E7EB;
+            display: none; 
+            margin-top: 10px;
+        }
+        .btn-restart:hover { 
+            background-color: #F9FAFB; 
+            color: var(--text-main);
+            border-color: var(--text-main);
+        }
+
+        /* Icono pequeño para la respuesta */
+        .icon { margin-right: 8px; }
+
+    </style>
+</head>
+<body>
+
+<div class="card-container">
+    <div class="header-info">
+        <span>Examen Final</span>
+        <span id="counterText">1 / 5</span>
+    </div>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    
+    <h2>Identifica</h2>
+    <p style="color: #6B7280; font-size: 0.9rem; margin-bottom: 20px;">Observa la imagen detalladamente</p>
+
+    <div class="question-image-container">
+        <img src="" alt="Máquina a identificar" class="question-image" id="qImage">
+    </div>
+    
+    <div class="answer-box" id="aText">
+        </div>
+
+    <div class="btn-container">
+        <button class="btn-reveal" id="revealBtn" onclick="showAnswer()">👁️ Mostrar Respuesta</button>
+        <button class="btn-next" id="nextBtn" onclick="nextQuestion()">Siguiente →</button>
+        <button class="btn-restart" id="restartBtn" onclick="restartQuiz()">↻ Barajar y Reiniciar</button>
+    </div>
+</div>
+
+<script>
+    // ======================================================
+    //  TU BASE DE DATOS (CONFIGURACIÓN)
+    // ======================================================
+const originalData = [
+        // --- GRUPO DIVISORIA (1 al 17) ---
+        { img: "Imagenes/1.png", name: "piladora de café - DIVISORIA" },
+        { img: "Imagenes/2.png", name: "ciclon aspirador(secadora de cafe) - DIVISORIA" },
+        { img: "Imagenes/3.png", name: "silo de almacenamiento - DIVISORIA" },
+        { img: "Imagenes/4.png", name: "elevador de cangilones - DIVISORIA" },
+        { img: "Imagenes/5.png", name: "balanza electronica - DIVISORIA" },
+        { img: "Imagenes/6.png", name: "tostadora - DIVISORIA" },
+        { img: "Imagenes/7.png", name: "molino - DIVISORIA" },
+        { img: "Imagenes/8.png", name: "jarra electrica - DIVISORIA" },
+        { img: "Imagenes/9.png", name: "medidor de humedad - DIVISORIA" },
+        { img: "Imagenes/10.png", name: "balanza de piso - DIVISORIA" },
+        { img: "Imagenes/11.png", name: "seleccionadora tubular - DIVISORIA" },
+        { img: "Imagenes/12.png", name: "molino - DIVISORIA" },
+        { img: "Imagenes/13.png", name: "tostadora - DIVISORIA" },
+        { img: "Imagenes/14.png", name: "pre limpia tubular - DIVISORIA" },
+        { img: "Imagenes/15.png", name: "despedregador - DIVISORIA" },
+        { img: "Imagenes/16.png", name: "seleccionador optico - DIVISORIA" },
+        { img: "Imagenes/17.png", name: "descascarilladora - DIVISORIA" },
+
+        // --- GRUPO KIMPITO (18 al 25) ---
+        { img: "Imagenes/18.png", name: "molienda - KIMPITO" },
+        { img: "Imagenes/19.png", name: "mezcladora - KIMPITO" },
+        { img: "Imagenes/20.png", name: "refrigeradoras - KIMPITO" },
+        { img: "Imagenes/21.png", name: "mesa de templado - KIMPITO" },
+        { img: "Imagenes/22.png", name: "descascarilladora - KIMPITO" },
+        { img: "Imagenes/23.png", name: "S/N - KIMPITO" },
+        { img: "Imagenes/24.png", name: "S/N - KIMPITO" },
+        { img: "Imagenes/25.png", name: "S/N - KIMPITO" },
+
+        // --- GRUPO CHOCOPASIÓN (26 al 39) ---
+        { img: "Imagenes/26.png", name: "DESCASCARILLADORA DE CACAO - CHOCOPASIÓN" },
+        { img: "Imagenes/27.png", name: "REFINADORA DE PALETAS - CHOCOPASIÓN" },
+        { img: "Imagenes/28.png", name: "AMASADORA - CHOCOPASIÓN" },
+        { img: "Imagenes/29.png", name: "PRENSA DE MANTECA DE CACAO - CHOCOPASIÓN" },
+        { img: "Imagenes/30.png", name: "SECADORA - CHOCOPASIÓN" },
+        { img: "Imagenes/31.png", name: "SELECCIONADORA - CHOCOPASIÓN" },
+        { img: "Imagenes/32.png", name: "TOSTADORA - CHOCOPASIÓN" },
+        { img: "Imagenes/33.png", name: "CAJAS DE FERMENTACIÓN - CHOCOPASIÓN" },
+        { img: "Imagenes/34.png", name: "MESAS DE SECADO - CHOCOPASIÓN" },
+        { img: "Imagenes/35.png", name: "FILTRO DE MANTECA - CHOCOPASIÓN" },
+        { img: "Imagenes/36.png", name: "CAMARA DE FRIO - CHOCOPASIÓN" },
+        { img: "Imagenes/37.png", name: "MOLINO REFINADOR DE CACAO - CHOCOPASIÓN" },
+        { img: "Imagenes/38.png", name: "ÁREA DE FRIO Y TABLETEADO - CHOCOPASIÓN" },
+        { img: "Imagenes/39.png", name: "PULVERIZADORA - CHOCOPASIÓN" },
+
+        // --- GRUPO EXÓTIC (40 al 48) ---
+        { img: "Imagenes/40.png", name: "ÁREA DE LAVADO DE BOTELLAS - EXÓTIC" },
+        { img: "Imagenes/41.png", name: "TANQUES DE enfriamiento - EXÓTIC" },
+        { img: "Imagenes/42.png", name: "COCINA - EXÓTIC" },
+        { img: "Imagenes/43.png", name: "TANQUES DE ALMACENAMIENTO DE PISCO (2 grandes 1500l y 4 macerado 300l) - EXÓTIC" },
+        { img: "Imagenes/44.png", name: "ÁREA DE ETIQUETADO - EXÓTIC" },
+        { img: "Imagenes/45.png", name: "ENVAZADORA - EXÓTIC" },
+        { img: "Imagenes/46.png", name: "MARMITA - EXÓTIC" },
+        { img: "Imagenes/47.png", name: "HOMOGENIZADOR - EXÓTIC" },
+        { img: "Imagenes/48.png", name: "destilador y alambique - EXÓTIC" },
+
+        // --- GRUPO CHAPACUETE (49 al 68) ---
+        { img: "Imagenes/49.png", name: "amasadora - CHAPACUETE" },
+        { img: "Imagenes/50.png", name: "faja transportadora - CHAPACUETE" },
+        { img: "Imagenes/51.png", name: "extrusora - CHAPACUETE" },
+        { img: "Imagenes/52.png", name: "cortadora - CHAPACUETE" },
+        { img: "Imagenes/53.png", name: "area de secado - CHAPACUETE" },
+        { img: "Imagenes/54.png", name: "horno Hoffman - CHAPACUETE" },
+        { img: "Imagenes/55.png", name: "molino de martillos - CHAPACUETE" },
+        { img: "Imagenes/56.png", name: "zaranda hexagonal - CHAPACUETE" },
+        { img: "Imagenes/57.png", name: "area de almacenado y distribución - CHAPACUETE" },
+        { img: "Imagenes/58.png", name: "area de formado - CHAPACUETE" },
+        { img: "Imagenes/59.png", name: "tolva y faja de alimentación - CHAPACUETE" },
+        { img: "Imagenes/60.png", name: "horno móvil - CHAPACUETE" },
+        { img: "Imagenes/61.png", name: "termocuplas y fajas transportadoras de cadena - CHAPACUETE" },
+        { img: "Imagenes/62.png", name: "controladores o indicadores de temperatura tipo shimaden - CHAPACUETE" },
+        { img: "Imagenes/63.png", name: "quemadores del horno móvil - CHAPACUETE" },
+        { img: "Imagenes/64.png", name: "compuertas - CHAPACUETE" },
+        { img: "Imagenes/65.png", name: "ventilador centrifugo del horno móvil - CHAPACUETE" },
+        { img: "Imagenes/66.png", name: "chimenea del horno móvil - CHAPACUETE" },
+        { img: "Imagenes/67.png", name: "balanza de humedad - CHAPACUETE" },
+        { img: "Imagenes/68.png", name: "tolva de alimentación de aserrín almacenamiento del mismo - CHAPACUETE" },
+
+        // --- GRUPO CITE AMBO (FQ) (69 al 88) ---
+        { img: "Imagenes/69.png", name: "balanza infrarroja - CITE AMBO (FQ)" },
+        { img: "Imagenes/70.png", name: "Estufa anormado - CITE AMBO (FQ)" },
+        { img: "Imagenes/71.png", name: "Analizador de Grasa Soxhlet - CITE AMBO (FQ)" },
+        { img: "Imagenes/72.png", name: "Digestor de Kjeldahl - CITE AMBO (FQ)" },
+        { img: "Imagenes/73.png", name: "Cocinilla con teteras especializadas - CITE AMBO (FQ)" },
+        { img: "Imagenes/74.png", name: "crisol - CITE AMBO (FQ)" },
+        { img: "Imagenes/75.png", name: "Horno mufla - CITE AMBO (FQ)" },
+        { img: "Imagenes/76.png", name: "Bomba de vacío - CITE AMBO (FQ)" },
+        { img: "Imagenes/77.png", name: "S/N - CITE AMBO (FQ)" },
+        { img: "Imagenes/78.png", name: "Unidad de destilación - CITE AMBO (FQ)" },
+        { img: "Imagenes/79.png", name: "alcalímetro - CITE AMBO (FQ)" },
+        { img: "Imagenes/80.png", name: "Refractómetro digital o brixometro - CITE AMBO (FQ)" },
+        { img: "Imagenes/81.png", name: "Micropipeta - CITE AMBO (FQ)" },
+        { img: "Imagenes/82.png", name: "PHmetro - CITE AMBO (FQ)" },
+        { img: "Imagenes/83.png", name: "papel filtro - CITE AMBO (FQ)" },
+        { img: "Imagenes/84.png", name: "bureta - CITE AMBO (FQ)" },
+        { img: "Imagenes/85.png", name: "balanza analítica - CITE AMBO (FQ)" },
+        { img: "Imagenes/86.png", name: "campanas de secación - CITE AMBO (FQ)" },
+        { img: "Imagenes/87.png", name: "equipo kender - CITE AMBO (FQ)" },
+        { img: "Imagenes/88.png", name: "Matraces Aforados - CITE AMBO (FQ)" },
+
+        // --- GRUPO CITE AMBO (MICRO BIO) (89 al 94) ---
+        { img: "Imagenes/89.png", name: "Autoclave - CITE AMBO (MICRO BIO)" },
+        { img: "Imagenes/90.png", name: "estufa esterilizadora - CITE AMBO (MICRO BIO)" },
+        { img: "Imagenes/91.png", name: "Baño Maria con agitador - CITE AMBO (MICRO BIO)" },
+        { img: "Imagenes/92.png", name: "stromacher - CITE AMBO (MICRO BIO)" },
+        { img: "Imagenes/93.png", name: "scan 100 o contador de colonias - CITE AMBO (MICRO BIO)" },
+        { img: "Imagenes/94.png", name: "incubadora - CITE AMBO (MICRO BIO)" },
+
+        // --- GRUPO CITE AMBO (PLANTA) (95 al 102) ---
+        { img: "Imagenes/95.png", name: "S/N - CITE AMBO (PLANTA)" },
+        { img: "Imagenes/96.png", name: "mezcladora pantalón - CITE AMBO (PLANTA)" },
+        { img: "Imagenes/97.png", name: "S/N - CITE AMBO (PLANTA)" },
+        { img: "Imagenes/98.png", name: "S/N - CITE AMBO (PLANTA)" },
+        { img: "Imagenes/99.png", name: "extrusora bitornillo - CITE AMBO (PLANTA)" },
+        { img: "Imagenes/100.png", name: "horno industrial - CITE AMBO (PLANTA)" },
+        { img: "Imagenes/101.png", name: "tanque de mezcla industrial - CITE AMBO (PLANTA)" },
+        { img: "Imagenes/102.png", name: "maquina llenadora - CITE AMBO (PLANTA)" },
+
+        // --- GRUPO MAXPLANCK MOD 1 (103 al 112) ---
+        { img: "Imagenes/103.png", name: "ELEVADOR DE VEHICULO - MAXPLANCK MOD 1" },
+        { img: "Imagenes/104.png", name: "SISTEMA DE DIRECCION - MAXPLANCK MOD 1" },
+        { img: "Imagenes/105.png", name: "DESLLANTADORA - MAXPLANCK MOD 1" },
+        { img: "Imagenes/106.png", name: "BALANCEADORA - MAXPLANCK MOD 1" },
+        { img: "Imagenes/107.png", name: "COMPRESOR DE RESORTES - MAXPLANCK MOD 1" },
+        { img: "Imagenes/108.png", name: "GATA HIDRAULICA - MAXPLANCK MOD 1" },
+        { img: "Imagenes/109.png", name: "S/N - MAXPLANCK MOD 1" },
+        { img: "Imagenes/110.png", name: "S/N - MAXPLANCK MOD 1" },
+        { img: "Imagenes/111.png", name: "S/N - MAXPLANCK MOD 1" },
+        { img: "Imagenes/112.png", name: "S/N - MAXPLANCK MOD 1" }
+    ];
+    // ======================================================
+
+    let shuffledData = [];
+    let currentIndex = 0;
+
+    const imgElement = document.getElementById("qImage");
+    const textElement = document.getElementById("aText");
+    const counterText = document.getElementById("counterText");
+    const progressBar = document.getElementById("progressBar");
+    const nextBtn = document.getElementById("nextBtn");
+    const revealBtn = document.getElementById("revealBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const qContainer = document.querySelector('.question-image-container');
+
+    function shuffleArray(array) {
+        let arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]]; 
+        }
+        return arr;
+    }
+
+    function initQuiz() {
+        shuffledData = shuffleArray(originalData);
+        currentIndex = 0;
+        
+        qContainer.style.display = "flex"; // Asegurar que se ve
+        document.querySelector('h2').innerText = "Identifica";
+        
+        restartBtn.style.display = "none";
+        loadCard();
+    }
+
+    function updateProgress() {
+        // Actualizar texto 1/5
+        counterText.innerText = `${currentIndex + 1} / ${shuffledData.length}`;
+        // Actualizar barra visual (porcentaje)
+        const percentage = ((currentIndex + 1) / shuffledData.length) * 100;
+        progressBar.style.width = `${percentage}%`;
+    }
+
+    function loadCard() {
+        if (currentIndex >= shuffledData.length) {
+            finishQuiz();
+            return;
+        }
+
+        // Cargar imagen
+        imgElement.src = shuffledData[currentIndex].img;
+        
+        // Preparar respuesta oculta
+        textElement.innerHTML = `✅ ${shuffledData[currentIndex].name}`;
+        textElement.style.display = "none";
+        
+        // Botones
+        revealBtn.style.display = "block";
+        nextBtn.style.display = "none";
+        
+        updateProgress();
+    }
+
+    function showAnswer() {
+        textElement.style.display = "block";
+        revealBtn.style.display = "none";
+        nextBtn.style.display = "block";
+    }
+
+    function nextQuestion() {
+        currentIndex++;
+        loadCard();
+    }
+
+    function finishQuiz() {
+        qContainer.style.display = "none"; // Ocultar imagen al final
+        document.querySelector('h2').innerText = "¡Repaso Completado!";
+        textElement.style.display = "none";
+        revealBtn.style.display = "none";
+        nextBtn.style.display = "none";
+        counterText.innerText = "Finalizado";
+        progressBar.style.width = "100%";
+        
+        restartBtn.style.display = "block";
+    }
+
+    function restartQuiz() {
+        initQuiz();
+    }
+
+    // Iniciar
+    initQuiz();
+</script>
+
+</body>
+</html>
